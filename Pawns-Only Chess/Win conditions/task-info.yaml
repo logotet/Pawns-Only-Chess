@@ -1,0 +1,1111 @@
+type: edu
+files:
+- name: src/chess/Main.kt
+  visible: true
+  text: |-
+    package chess
+
+    fun main() {
+
+        val board = Board()
+        val prompter = Prompter()
+        prompter.printTitle()
+        val players = prompter.getPlayersNames()
+        val playerOne = players[0]
+        val playerTwo = players[1]
+        var playerPlaying: Player = playerOne
+        board.currentPlayer = playerPlaying
+        board.printBoard()
+        prompter.playersMove(playerPlaying)
+        var command = prompter.askForInput()
+
+        while (command != "exit") {
+            playerPlaying.move(command)
+            if (board.executeMove(command)) {
+                if (playerPlaying.played) {
+                    playerPlaying = if (playerPlaying == playerOne) {
+                        playerTwo
+                    } else {
+                        playerOne
+                    }
+                } else {
+                    prompter.invalidMove()
+                }
+                board.currentPlayer = playerPlaying
+            }
+            prompter.playersMove(playerPlaying)
+            command = prompter.askForInput()
+        }
+
+        prompter.exitProgram()
+
+    }
+  learner_created: false
+- name: test/PawnsOnlyChessTest.kt
+  visible: false
+  text: |+
+    import org.hyperskill.hstest.dynamic.DynamicTest
+    import org.hyperskill.hstest.stage.StageTest
+    import org.hyperskill.hstest.testcase.CheckResult
+    import org.hyperskill.hstest.testing.TestedProgram
+
+    class PawnsOnlyChessTest : StageTest<Any>() {
+        @DynamicTest
+        fun testAdd5(): CheckResult {
+            val pawnsWhite = MutableList<Pair<Int, Int>>(8) { index -> Pair(1, index) }
+            val pawnsBlack = MutableList<Pair<Int, Int>>(8) { index -> Pair(6, index) }
+
+            val main = TestedProgram()
+            var outputString = main.start().trim()
+
+            var position = checkOutput(outputString.toLowerCase(), 0, "pawns-only chess")
+            if ( position  == -1 ) return CheckResult(false, "Program title is expected.")
+            position = checkOutput(outputString.toLowerCase(), position, "first player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 name prompt is expected.")
+
+            outputString = main.execute("John").trim()
+            position = checkOutput(outputString.toLowerCase(), 0, "second player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 2 name prompt is expected.")
+
+            outputString = main.execute("Amelia").trim()
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong initial chessboard printout.")
+            position = checkOutput(outputString.toLowerCase(), position, "john's turn:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 prompt to play is expected.")
+
+            for (ch in 'a'..'h') {
+                outputString = main.execute("${ch}2${ch}4").trim()
+                pawnsWhite.remove(Pair(1, ch - 'h' + 7))
+                pawnsWhite.add(Pair(3, ch - 'h' + 7))
+                position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+                if (position == -1) return CheckResult(false, "Wrong chessboard printout after 2 squares move.")
+                position = checkOutput(outputString.toLowerCase(), position, "amelia's turn:")
+                if (position == -1) return CheckResult(false, "Player 2 prompt to play is expected.")
+
+                outputString = main.execute("${ch}7${ch}5").trim()
+                pawnsBlack.remove(Pair(6, ch - 'h' + 7))
+                pawnsBlack.add(Pair(4, ch - 'h' + 7))
+                position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+                if (position == -1) return CheckResult(false, "Wrong chessboard printout after 2 squares move.")
+                position = checkOutput(outputString.toLowerCase(), position, "john's turn:")
+                if (position == -1) return CheckResult(false, "Player 1 prompt to play is expected.")
+            }
+
+            outputString = main.execute("exit").trim()
+            position = checkOutput(outputString.toLowerCase(), 0, "bye")
+            if ( position  == -1 ) return CheckResult(false, "Exit message is expected.")
+
+            return CheckResult.correct()
+        }
+
+        @DynamicTest
+        fun test1(): CheckResult {
+            val pawnsWhite = MutableList<Pair<Int, Int>>(8) {index -> Pair(1,index) }
+            val pawnsBlack = MutableList<Pair<Int, Int>>(8) {index -> Pair(6,index) }
+
+            val main = TestedProgram()
+            var outputString = main.start().trim()
+
+            var position = checkOutput(outputString.toLowerCase(), 0, "pawns-only chess")
+            if ( position  == -1 ) return CheckResult(false, "Program title is expected.")
+            position = checkOutput(outputString.toLowerCase(), position, "first player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 name prompt is expected.")
+
+            outputString = main.execute("John").trim()
+            position = checkOutput(outputString.toLowerCase(), 0, "second player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 2 name prompt is expected.")
+
+            outputString = main.execute("Amelia").trim()
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong initial chessboard printout.")
+            position = checkOutput(outputString.toLowerCase(), position, "john's turn:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 prompt to play is expected.")
+
+            outputString = main.execute("e2e4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 4))
+            pawnsWhite.add(Pair(3, 4))
+            outputString = main.execute("d7d5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 3))
+            pawnsBlack.add(Pair(4, 3))
+            outputString = main.execute("e4d5").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(4, 3))
+            pawnsWhite.remove(Pair(3, 4))
+            pawnsWhite.add(Pair(4, 3))
+            outputString = main.execute("c7c6").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 2))
+            pawnsBlack.add(Pair(5, 2))
+            outputString = main.execute("d5d6").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(4, 3))
+            pawnsWhite.add(Pair(5, 3))
+            outputString = main.execute("c6c5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(5, 2))
+            pawnsBlack.add(Pair(4, 2))
+            outputString = main.execute("d6d7").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(5, 3))
+            pawnsWhite.add(Pair(6, 3))
+            outputString = main.execute("c5c4").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(4, 2))
+            pawnsBlack.add(Pair(3, 2))
+            outputString = main.execute("d7d8").trim()
+            pawnsWhite.remove(Pair(6, 3))
+            pawnsWhite.add(Pair(7, 3))
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong chessboard printout after white pawn reaches 8th rank.")
+            position = checkOutput(outputString.toLowerCase(), position, "white wins!", "bye")
+            if ( position  == -1 ) return CheckResult(false, "Wrong output after white pawn reaches 8th rank.")
+
+            return CheckResult.correct()
+        }
+
+        @DynamicTest
+        fun test2(): CheckResult {
+            val pawnsWhite = MutableList<Pair<Int, Int>>(8) {index -> Pair(1,index) }
+            val pawnsBlack = MutableList<Pair<Int, Int>>(8) {index -> Pair(6,index) }
+
+            val main = TestedProgram()
+            var outputString = main.start().trim()
+
+            var position = checkOutput(outputString.toLowerCase(), 0, "pawns-only chess")
+            if ( position  == -1 ) return CheckResult(false, "Program title is expected.")
+            position = checkOutput(outputString.toLowerCase(), position, "first player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 name prompt is expected.")
+
+            outputString = main.execute("John").trim()
+            position = checkOutput(outputString.toLowerCase(), 0, "second player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 2 name prompt is expected.")
+
+            outputString = main.execute("Amelia").trim()
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong initial chessboard printout.")
+            position = checkOutput(outputString.toLowerCase(), position, "john's turn:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 prompt to play is expected.")
+
+            outputString = main.execute("e2e4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 4))
+            pawnsWhite.add(Pair(3, 4))
+            outputString = main.execute("d7d5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 3))
+            pawnsBlack.add(Pair(4, 3))
+            outputString = main.execute("b2b3").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 1))
+            pawnsWhite.add(Pair(2, 1))
+            outputString = main.execute("d5e4").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsWhite.remove(Pair(3, 4))
+            pawnsBlack.remove(Pair(4, 3))
+            pawnsBlack.add(Pair(3, 4))
+            outputString = main.execute("b3b4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(2, 1))
+            pawnsWhite.add(Pair(3, 1))
+            outputString = main.execute("e4e3").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(3, 4))
+            pawnsBlack.add(Pair(2, 4))
+            outputString = main.execute("b4b5").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(3, 1))
+            pawnsWhite.add(Pair(4, 1))
+            outputString = main.execute("e3e2").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(2, 4))
+            pawnsBlack.add(Pair(1, 4))
+            outputString = main.execute("b5b6").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(4, 1))
+            pawnsWhite.add(Pair(5, 1))
+            outputString = main.execute("e2e1").trim()
+            pawnsBlack.remove(Pair(1, 4))
+            pawnsBlack.add(Pair(0, 4))
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong chessboard printout after black pawn reaches 1st rank.")
+            position = checkOutput(outputString.toLowerCase(), position, "black wins!", "bye")
+            if ( position  == -1 ) return CheckResult(false, "Wrong output after black pawn reaches 1st rank.")
+
+            return CheckResult.correct()
+        }
+
+        @DynamicTest
+        fun test3(): CheckResult {
+            val pawnsWhite = MutableList<Pair<Int, Int>>(8) {index -> Pair(1,index) }
+            val pawnsBlack = MutableList<Pair<Int, Int>>(8) {index -> Pair(6,index) }
+
+            val main = TestedProgram()
+            var outputString = main.start().trim()
+
+            var position = checkOutput(outputString.toLowerCase(), 0, "pawns-only chess")
+            if ( position  == -1 ) return CheckResult(false, "Program title is expected.")
+            position = checkOutput(outputString.toLowerCase(), position, "first player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 name prompt is expected.")
+
+            outputString = main.execute("John").trim()
+            position = checkOutput(outputString.toLowerCase(), 0, "second player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 2 name prompt is expected.")
+
+            outputString = main.execute("Amelia").trim()
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong initial chessboard printout.")
+            position = checkOutput(outputString.toLowerCase(), position, "john's turn:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 prompt to play is expected.")
+
+            outputString = main.execute("a2a4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 0))
+            pawnsWhite.add(Pair(3, 0))
+            outputString = main.execute("b7b5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 1))
+            pawnsBlack.add(Pair(4, 1))
+            outputString = main.execute("a4b5").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(4, 1))
+            pawnsWhite.remove(Pair(3, 0))
+            pawnsWhite.add(Pair(4, 1))
+            outputString = main.execute("c7c6").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 2))
+            pawnsBlack.add(Pair(5, 2))
+            outputString = main.execute("b5c6").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(5, 2))
+            pawnsWhite.remove(Pair(4, 1))
+            pawnsWhite.add(Pair(5, 2))
+            outputString = main.execute("a7a5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 0))
+            pawnsBlack.add(Pair(4, 0))
+            outputString = main.execute("c6d7").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 3))
+            pawnsWhite.remove(Pair(5, 2))
+            pawnsWhite.add(Pair(6, 3))
+            outputString = main.execute("a5a4").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(4, 0))
+            pawnsBlack.add(Pair(3, 0))
+            outputString = main.execute("d2d4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 3))
+            pawnsWhite.add(Pair(3, 3))
+            outputString = main.execute("e7e5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 4))
+            pawnsBlack.add(Pair(4, 4))
+            outputString = main.execute("d4e5").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(4, 4))
+            pawnsWhite.remove(Pair(3, 3))
+            pawnsWhite.add(Pair(4, 4))
+            outputString = main.execute("f7f6").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 5))
+            pawnsBlack.add(Pair(5, 5))
+            outputString = main.execute("e5f6").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(5, 5))
+            pawnsWhite.remove(Pair(4, 4))
+            pawnsWhite.add(Pair(5, 5))
+            outputString = main.execute("h7h5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 7))
+            pawnsBlack.add(Pair(4, 7))
+            outputString = main.execute("f6g7").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 6))
+            pawnsWhite.remove(Pair(5, 5))
+            pawnsWhite.add(Pair(6, 6))
+            outputString = main.execute("a4a3").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(3, 0))
+            pawnsBlack.add(Pair(2, 0))
+            outputString = main.execute("b2a3").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(2, 0))
+            pawnsWhite.remove(Pair(1, 1))
+            pawnsWhite.add(Pair(2, 0))
+            outputString = main.execute("h5h4").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(4, 7))
+            pawnsBlack.add(Pair(3, 7))
+            outputString = main.execute("c2c3").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 2))
+            pawnsWhite.add(Pair(2, 2))
+            outputString = main.execute("h4h3").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(3, 7))
+            pawnsBlack.add(Pair(2, 7))
+            outputString = main.execute("g2h3").trim()
+            pawnsBlack.remove(Pair(2, 7))
+            pawnsWhite.remove(Pair(1, 6))
+            pawnsWhite.add(Pair(2, 7))
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong chessboard printout after white captures all black pawns.")
+            position = checkOutput(outputString.toLowerCase(), position, "white wins!", "bye")
+            if ( position  == -1 ) return CheckResult(false, "Wrong output after white wins after capturing all black pawns.")
+
+            return CheckResult.correct()
+        }
+
+        @DynamicTest
+        fun test4(): CheckResult {
+            val pawnsWhite = MutableList<Pair<Int, Int>>(8) {index -> Pair(1,index) }
+            val pawnsBlack = MutableList<Pair<Int, Int>>(8) {index -> Pair(6,index) }
+
+            val main = TestedProgram()
+            var outputString = main.start().trim()
+
+            var position = checkOutput(outputString.toLowerCase(), 0, "pawns-only chess")
+            if ( position  == -1 ) return CheckResult(false, "Program title is expected.")
+            position = checkOutput(outputString.toLowerCase(), position, "first player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 name prompt is expected.")
+
+            outputString = main.execute("John").trim()
+            position = checkOutput(outputString.toLowerCase(), 0, "second player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 2 name prompt is expected.")
+
+            outputString = main.execute("Amelia").trim()
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong initial chessboard printout.")
+            position = checkOutput(outputString.toLowerCase(), position, "john's turn:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 prompt to play is expected.")
+
+            outputString = main.execute("a2a4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 0))
+            pawnsWhite.add(Pair(3, 0))
+            outputString = main.execute("b7b5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 1))
+            pawnsBlack.add(Pair(4, 1))
+            outputString = main.execute("h2h3").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 7))
+            pawnsWhite.add(Pair(2, 7))
+            outputString = main.execute("b5a4").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsWhite.remove(Pair(3, 0))
+            pawnsBlack.remove(Pair(4, 1))
+            pawnsBlack.add(Pair(3, 0))
+            outputString = main.execute("b2b3").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 1))
+            pawnsWhite.add(Pair(2, 1))
+            outputString = main.execute("a4b3").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsWhite.remove(Pair(2, 1))
+            pawnsBlack.remove(Pair(3, 0))
+            pawnsBlack.add(Pair(2, 1))
+            outputString = main.execute("h3h4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(2, 7))
+            pawnsWhite.add(Pair(3, 7))
+            outputString = main.execute("b3c2").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 2))
+            pawnsBlack.remove(Pair(2, 1))
+            pawnsBlack.add(Pair(1, 2))
+            outputString = main.execute("h4h5").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(3, 7))
+            pawnsWhite.add(Pair(4, 7))
+            outputString = main.execute("c7c5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 2))
+            pawnsBlack.add(Pair(4, 2))
+            outputString = main.execute("d2d4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 3))
+            pawnsWhite.add(Pair(3, 3))
+            outputString = main.execute("c5d4").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsWhite.remove(Pair(3, 3))
+            pawnsBlack.remove(Pair(4, 2))
+            pawnsBlack.add(Pair(3, 3))
+            outputString = main.execute("e2e3").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 4))
+            pawnsWhite.add(Pair(2, 4))
+            outputString = main.execute("d4e3").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsWhite.remove(Pair(2, 4))
+            pawnsBlack.remove(Pair(3, 3))
+            pawnsBlack.add(Pair(2, 4))
+            outputString = main.execute("g2g4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 6))
+            pawnsWhite.add(Pair(3, 6))
+            outputString = main.execute("e3f2").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 5))
+            pawnsBlack.remove(Pair(2, 4))
+            pawnsBlack.add(Pair(1, 5))
+            outputString = main.execute("h5h6").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(4, 7))
+            pawnsWhite.add(Pair(5, 7))
+            outputString = main.execute("g7h6").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsWhite.remove(Pair(5, 7))
+            pawnsBlack.remove(Pair(6, 6))
+            pawnsBlack.add(Pair(5, 7))
+            outputString = main.execute("g4g5").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(3, 6))
+            pawnsWhite.add(Pair(4, 6))
+            outputString = main.execute("h6g5").trim()
+            pawnsWhite.remove(Pair(4, 6))
+            pawnsBlack.remove(Pair(5, 7))
+            pawnsBlack.add(Pair(4, 6))
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong chessboard printout after black captures all white pawns.")
+            position = checkOutput(outputString.toLowerCase(), position, "black wins!", "bye")
+            if ( position  == -1 ) return CheckResult(false, "Wrong output after black wins after capturing all white pawns.")
+
+            return CheckResult.correct()
+        }
+
+        @DynamicTest
+        fun test5(): CheckResult {
+            val pawnsWhite = MutableList<Pair<Int, Int>>(8) {index -> Pair(1,index) }
+            val pawnsBlack = MutableList<Pair<Int, Int>>(8) {index -> Pair(6,index) }
+
+            val main = TestedProgram()
+            var outputString = main.start().trim()
+
+            var position = checkOutput(outputString.toLowerCase(), 0, "pawns-only chess")
+            if ( position  == -1 ) return CheckResult(false, "Program title is expected.")
+            position = checkOutput(outputString.toLowerCase(), position, "first player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 name prompt is expected.")
+
+            outputString = main.execute("John").trim()
+            position = checkOutput(outputString.toLowerCase(), 0, "second player's name:")
+            if ( position  == -1 ) return CheckResult(false, "Player 2 name prompt is expected.")
+
+            outputString = main.execute("Amelia").trim()
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong initial chessboard printout.")
+            position = checkOutput(outputString.toLowerCase(), position, "john's turn:")
+            if ( position  == -1 ) return CheckResult(false, "Player 1 prompt to play is expected.")
+
+            outputString = main.execute("a2a4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 0))
+            pawnsWhite.add(Pair(3, 0))
+            outputString = main.execute("b7b5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 1))
+            pawnsBlack.add(Pair(4, 1))
+            outputString = main.execute("a4b5").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(4, 1))
+            pawnsWhite.remove(Pair(3, 0))
+            pawnsWhite.add(Pair(4, 1))
+            outputString = main.execute("c7c6").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 2))
+            pawnsBlack.add(Pair(5, 2))
+            outputString = main.execute("b5c6").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(5, 2))
+            pawnsWhite.remove(Pair(4, 1))
+            pawnsWhite.add(Pair(5, 2))
+            outputString = main.execute("a7a5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 0))
+            pawnsBlack.add(Pair(4, 0))
+            outputString = main.execute("c6d7").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 3))
+            pawnsWhite.remove(Pair(5, 2))
+            pawnsWhite.add(Pair(6, 3))
+            outputString = main.execute("a5a4").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(4, 0))
+            pawnsBlack.add(Pair(3, 0))
+            outputString = main.execute("d2d4").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsWhite.remove(Pair(1, 3))
+            pawnsWhite.add(Pair(3, 3))
+            outputString = main.execute("e7e5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 4))
+            pawnsBlack.add(Pair(4, 4))
+            outputString = main.execute("d4e5").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(4, 4))
+            pawnsWhite.remove(Pair(3, 3))
+            pawnsWhite.add(Pair(4, 4))
+            outputString = main.execute("f7f6").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 5))
+            pawnsBlack.add(Pair(5, 5))
+            outputString = main.execute("e5f6").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(5, 5))
+            pawnsWhite.remove(Pair(4, 4))
+            pawnsWhite.add(Pair(5, 5))
+            outputString = main.execute("h7h5").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 7))
+            pawnsBlack.add(Pair(4, 7))
+            outputString = main.execute("f6g7").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(6, 6))
+            pawnsWhite.remove(Pair(5, 5))
+            pawnsWhite.add(Pair(6, 6))
+            outputString = main.execute("a4a3").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(3, 0))
+            pawnsBlack.add(Pair(2, 0))
+            outputString = main.execute("b2a3").toLowerCase().trim()
+            if ( !outputString.contains("amelia's turn:") ) return CheckResult(false, "Player 2 prompt to play is expected.")
+            pawnsBlack.remove(Pair(2, 0))
+            pawnsWhite.remove(Pair(1, 1))
+            pawnsWhite.add(Pair(2, 0))
+            outputString = main.execute("h5h4").toLowerCase().trim()
+            if ( !outputString.contains("john's turn:") ) return CheckResult(false, "Player 1 prompt to play is expected.")
+            pawnsBlack.remove(Pair(4, 7))
+            pawnsBlack.add(Pair(3, 7))
+            outputString = main.execute("h2h3").trim()
+            pawnsWhite.remove(Pair(1, 7))
+            pawnsWhite.add(Pair(2, 7))
+            position = checkChessboard(outputString, 0, pawnsWhite, pawnsBlack)
+            if ( position  == -1 ) return CheckResult(false, "Wrong chessboard printout after white captures all black pawns.")
+            position = checkOutput(outputString.toLowerCase(), position, "stalemate!", "bye")
+            if ( position  == -1 ) return CheckResult(false, "Wrong output after white wins after stalemate.")
+
+            return CheckResult.correct()
+        }
+
+    }
+
+    fun checkChessboard(outputString: String, searchPos: Int, pawnsWhite: List<Pair<Int, Int>>, pawnsBlack: List<Pair<Int, Int>>): Int {
+        fun createChessboardStringList(pawnsWhite: List<Pair<Int, Int>>, pawnsBlack: List<Pair<Int, Int>>): List<String> {
+            var chessboard = "  +---+---+---+---+---+---+---+---+\n"
+            for (i in 7 downTo 0) {
+                chessboard += "${i + 1} |"
+                for (j in 0..7) {
+                    val square = when {
+                        pawnsWhite.contains(Pair(i, j)) -> 'W'
+                        pawnsBlack.contains(Pair(i, j)) -> 'B'
+                        else -> ' '
+                    }
+                    chessboard += " $square |"
+                }
+                chessboard += "\n  +---+---+---+---+---+---+---+---+\n"
+            }
+            chessboard += "    a   b   c   d   e   f   g   h\n"
+    //        println(chessboard)
+            return chessboard.trim().split("\n").map { it.trim() }
+        }
+        val chessboardStringList = createChessboardStringList(pawnsWhite, pawnsBlack)
+        return checkOutput(outputString, searchPos, * chessboardStringList.toTypedArray())
+    }
+
+    fun checkOutput(outputString: String, searchPos: Int, vararg checkStr: String): Int {
+        var searchPosition = searchPos
+        for (str in checkStr) {
+            val findPosition = outputString.indexOf(str, searchPosition)
+            if (findPosition == -1) return -1
+            if ( outputString.substring(searchPosition until findPosition).isNotBlank() ) return -1
+            searchPosition = findPosition + str.length
+        }
+        return searchPosition
+    }
+
+
+  learner_created: false
+- name: src/chess/Board.kt
+  visible: true
+  text: |-
+    package chess
+
+    import kotlin.math.abs
+
+    class Board {
+        val emptySpace = "   "
+        val horLinePattern = "  " + "+---".repeat(8) + "+"
+        val fieldPattern = "|"
+        var bottomLine = getBottomLinePattern()
+        val matrixBoard = createMatrixBoard()
+        var figurePlaying: Figure? = null
+        var currentPlayer: Player? = null
+        val prompter = Prompter()
+
+        private fun getBottomLinePattern(): String {
+            var line = "$emptySpace "
+            for (c in 'a'..'h') {
+                line += c + emptySpace
+            }
+            return line
+        }
+
+        fun printBoard() {
+            for (i in 8 downTo 1) {
+                println(horLinePattern)
+                when (i) {
+                    8 -> println("$i ${getRow(0)}")
+                    7 -> println("$i ${getRow(1)}")
+                    6 -> println("$i ${getRow(2)}")
+                    5 -> println("$i ${getRow(3)}")
+                    4 -> println("$i ${getRow(4)}")
+                    3 -> println("$i ${getRow(5)}")
+                    2 -> println("$i ${getRow(6)}")
+                    1 -> println("$i ${getRow(7)}")
+                    else -> println("$i ${(fieldPattern + emptySpace).repeat(9)}")
+                }
+            }
+            println(horLinePattern)
+            println(bottomLine)
+        }
+
+        fun createMatrixBoard(): MutableList<MutableList<Figure>> {
+            return mutableListOf(
+                MutableList(8) { EmptyFigure() },
+                MutableList(8) { Pawn("B") },
+                MutableList(8) { EmptyFigure() },
+                MutableList(8) { EmptyFigure() },
+                MutableList(8) { EmptyFigure() },
+                MutableList(8) { EmptyFigure() },
+                MutableList(8) { Pawn("W") },
+                MutableList(8) { EmptyFigure() },
+            )
+        }
+
+        fun getRow(line: Int): String {
+            var row = ""
+            for (element in matrixBoard[line]) {
+                row = row.plus("$fieldPattern ${element.color} ")
+            }
+            row = row.plus(fieldPattern)
+            return row
+        }
+
+        fun executeMove(fromTo: String = "c2c4"): Boolean {
+            figurePlaying = null
+            val coords = CommandReader.getCoordsFromCommand(fromTo)
+            pickCurrentFigure(coords.rowFrom, coords.colFrom)
+            val valid = checkIfMoveIsValid(coords)
+            if (!valid) {
+                return false
+            }
+            var command = CommandReader.checkCommand((figurePlaying as Pawn), coords)
+            return when (command) {
+                "move" -> {
+                    if (!isCellWithEnemy(coords.rowTo, coords.colTo)) {
+                        executePawnMove(coords)
+                        true
+                    } else {
+                        prompter.invalidMove()
+                        false
+                    }
+
+                }
+                "capture" -> {
+                    if (isCellWithEnemy(coords.rowTo, coords.colTo)) {
+                        executeCapture(coords)
+                        true
+                    } else if (matrixBoard[coords.rowFrom][coords.colTo] is Pawn && (matrixBoard[coords.rowFrom][coords.colTo] as Pawn).enPassantAvlb &&
+                            isCellEmpty(coords.rowTo, coords.colTo) && coords.rowFrom == Row.getMatrixRow("5") ||
+                        coords.rowFrom == Row.getMatrixRow("4")
+                    ) {
+                        executeEnPassant(coords)
+                        true
+                    } else {
+                        prompter.invalidMove()
+                        false
+                    }
+                }
+                else -> {
+                    prompter.invalidMove()
+                    false
+                }
+            }
+        }
+
+        private fun executeEnPassant(coords: Coordinates) {
+            matrixBoard[coords.rowTo][coords.colTo] = figurePlaying!!
+            matrixBoard[coords.rowFrom][coords.colFrom] = EmptyFigure()
+            matrixBoard[coords.rowFrom][coords.colTo] = EmptyFigure()
+            printBoard()
+        }
+
+        private fun executeCapture(coords: Coordinates) {
+            matrixBoard[coords.rowTo][coords.colTo] = figurePlaying!!
+            matrixBoard[coords.rowFrom][coords.colFrom] = EmptyFigure()
+            (figurePlaying as Pawn).secondMove = (figurePlaying as Pawn).firstMove
+            (figurePlaying as Pawn).firstMove = false
+            disableEnPassantOption()
+            printBoard()
+        }
+
+        private fun executePawnMove(coords: Coordinates) {
+            matrixBoard[coords.rowTo][coords.colTo] = figurePlaying!!
+            matrixBoard[coords.rowFrom][coords.colFrom] = EmptyFigure()
+            (figurePlaying as Pawn).secondMove = (figurePlaying as Pawn).firstMove
+            (figurePlaying as Pawn).firstMove = false
+            disableEnPassantOption()
+            if (abs(coords.rowFrom - coords.rowTo) == 2) {
+                (figurePlaying as Pawn).enPassantAvlb = true
+            }
+            printBoard()
+        }
+
+        private fun checkIfMoveIsValid(coords: Coordinates): Boolean {
+            return if (figurePlaying == null) {
+                false
+            } else if (figurePlaying !is Pawn) {
+                prompter.noAvlbFigure(
+                    currentPlayer!!.playingColor.fullName, Column.getPrintableColumn(coords.colFrom) +
+                            Row.getPrintableRow(coords.rowFrom)
+                )
+                Column.getPrintableColumn(coords.colFrom)
+                false
+            } else if (figurePlaying!!.color != currentPlayer!!.playingColor.letter) {
+                prompter.noAvlbFigure(
+                    currentPlayer!!.playingColor.fullName, Column.getPrintableColumn(coords.colFrom) +
+                            Row.getPrintableRow(coords.rowFrom)
+                )
+                Column.getPrintableColumn(coords.colFrom)
+                false
+            } else {
+                true
+            }
+        }
+
+
+        private fun isCellEmpty(row: Int, col: Int) = matrixBoard[row][col] == EmptyFigure()
+
+        private fun isAllowedFigure(coords: Coordinates): Boolean {
+            return if (isCellEmpty(coords.rowFrom, coords.colFrom) ||
+                currentPlayer!!.playingColor.letter.trim() != figurePlaying!!.color.trim()
+            ) {
+                println(
+                    "No ${currentPlayer!!.playingColor.fullName} pawn at " +
+                            "${Column.getPrintableColumn(coords.colFrom)}${Row.getPrintableRow(coords.rowFrom)}"
+                )
+                Column.getPrintableColumn(coords.colFrom)
+                false
+            } else {
+                true
+            }
+        }
+
+        fun isCellWithEnemy(row: Int, col: Int) =
+            matrixBoard[row][col].color != figurePlaying?.color && !isCellEmpty(row, col)
+
+        fun pickCurrentFigure(row: Int, col: Int) {
+            figurePlaying = matrixBoard[row][col]
+        }
+
+        fun getFigure(row: Int, col: Int): Figure = matrixBoard[row][col]
+
+        fun disableEnPassantOption() {
+    //        var totalAvlbEnP = 0
+    //        for (piece in matrixBoard[Row.getMatrixRow("5")]) {
+    //            if (piece is Pawn && (piece as Pawn).enPassantAvlb) {
+    //                totalAvlbEnP++
+    //            }
+    //        }
+    //        for (piece in matrixBoard[Row.getMatrixRow("4")]) {
+    //            if (piece is Pawn && (piece as Pawn).enPassantAvlb) {
+    //                totalAvlbEnP++
+    //            }
+    //        }
+    //        println(totalAvlbEnP)
+            disableEnpassantForRow("5")
+            disableEnpassantForRow("4")
+        }
+
+        private fun disableEnpassantForRow(row: String) {
+            for (piece in matrixBoard[Row.getMatrixRow(row)]) {
+                if (piece is Pawn) {
+                    piece.enPassantAvlb = false
+                }
+            }
+        }
+    }
+
+    //private fun executeEnPassant(coords: Coordinates) {
+    //    if((matrixBoard[coords.rowFrom][coords.colTo] as Pawn).enPassantAvlb) {
+    //        matrixBoard[coords.rowTo][coords.colTo] = figurePlaying!!
+    //        matrixBoard[coords.rowFrom][coords.colFrom] = EmptyFigure()
+    //        matrixBoard[coords.rowFrom][coords.colTo] = EmptyFigure()
+    //        printBoard()
+    //    }else{
+    //        prompter.invalidMove()
+    //    }
+    //}
+  learner_created: false
+- name: src/chess/Color.kt
+  visible: true
+  text: |-
+    package chess
+
+    enum class Color(val letter: String, val fullName: String) {
+        WHITE("W", "white"),
+        BLACK("B", "black")
+    }
+  learner_created: false
+- name: src/chess/Prompter.kt
+  visible: true
+  text: |-
+    package chess
+
+    class Prompter {
+
+        fun printTitle() {
+            println("Pawns-Only Chess")
+        }
+
+        fun askForInput(): String {
+            print("> ")
+            return readLine()!!
+        }
+
+        fun getPlayersNames(): MutableList<Player> {
+            println("First Player's name:")
+            val firstPlayer = Player(askForInput(), Color.WHITE)
+            println("Second Player's name:")
+            val secondPlayer = Player(askForInput(), Color.BLACK)
+            return mutableListOf(firstPlayer, secondPlayer)
+        }
+
+        fun playersMove(player: Player) {
+            println("${player.name}'s turn:")
+        }
+
+        fun invalidMove() {
+            println("Invalid Input")
+        }
+
+        fun noAvlbFigure(color: String, cell: String){
+            println(
+                    "No $color pawn at " +
+                            "$cell"
+                )
+        }
+
+        fun exitProgram() {
+            println("Bye!")
+        }
+
+    }
+  learner_created: false
+- name: src/chess/Row.kt
+  visible: true
+  text: |-
+    package chess
+
+    enum class Row(val printableVal: Int, val matrixVal: Int) {
+        ROW_1(1, 7),
+        ROW_2(2, 6),
+        ROW_3(3, 5),
+        ROW_4(4, 4),
+        ROW_5(5, 3),
+        ROW_6(6, 2),
+        ROW_7(7, 1),
+        ROW_8(8, 0);
+
+        companion object {
+            fun getMatrixRow(pritableValue: String): Int {
+                for (r in values()) {
+                    if (r.printableVal == pritableValue.toInt()) {
+                        return r.matrixVal
+                    }
+                }
+                return -1
+            }
+
+            fun getPrintableRow(matrixValue: Int): String {
+                for (r in values()) {
+                    if (r.matrixVal == matrixValue) {
+                        return r.printableVal.toString()
+                    }
+                }
+                return "-1"
+            }
+        }
+    }
+  learner_created: false
+- name: src/chess/Coordinates.kt
+  visible: true
+  text: |-
+    package chess
+
+    class Coordinates(
+        val colFrom: Int,
+        var rowFrom: Int,
+        var colTo: Int,
+        var rowTo: Int
+    )
+  learner_created: false
+- name: src/chess/Figure.kt
+  visible: true
+  text: |+
+    package chess
+
+    import kotlin.math.abs
+
+    abstract class Figure(val color: String) {
+        abstract fun move(coordinates: Coordinates): Boolean
+    }
+
+    data class EmptyFigure(val emptyColor: String = " ") : Figure(emptyColor) {
+        override fun move(coordinates: Coordinates): Boolean {
+            TODO("Not yet implemented")
+        }
+    }
+
+    data class Pawn(val pawnColor: String, val name: String = " P ") : Figure(pawnColor) {
+        var firstMove = true
+        var secondMove = false
+        var enPassantAvlb = false
+
+        override fun move(coordinates: Coordinates): Boolean {
+    //        if(!firstMove &&abs(coordinates.rowFrom - coordinates.rowTo) == 1 &&
+    //            coordinates.colFrom != coordinates.colTo && !isMoveBackwards(coordinates)
+    //                ){
+    //            return true
+    //        }
+    //        else if(firstMove &&
+    //            abs(coordinates.rowFrom - coordinates.rowTo) == 1 ||
+    //            abs(coordinates.rowFrom - coordinates.rowTo) == 2 &&
+    //            coordinates.colFrom != coordinates.colTo && !isMoveBackwards(coordinates)
+    //        ){
+    //            return true
+    //        }else{
+    //            return false
+    //        }
+            return if (coordinates.colFrom != coordinates.colTo) {
+                false
+            } else if (isMoveBackwards(coordinates)) {
+                false
+            } else if (abs(coordinates.rowFrom - coordinates.rowTo) == 1) {
+                enPassantAvlb = false
+                true
+            } else if (abs(coordinates.rowFrom - coordinates.rowTo) == 2 && this.firstMove) {
+                enPassantAvlb = true
+                true
+            } else {
+                false
+            }
+        }
+
+        fun isMoveBackwards(coordinates: Coordinates): Boolean {
+            return if (pawnColor.trim() == Color.WHITE.letter.trim() && (coordinates.rowFrom - coordinates.rowTo) < 0) {
+                true
+            } else pawnColor.trim() == Color.BLACK.letter.trim() && (coordinates.rowFrom - coordinates.rowTo) > 0
+        }
+
+        fun capture(coordinates: Coordinates) = abs(coordinates.rowFrom - coordinates.rowTo) == 1 &&
+                abs(coordinates.colFrom - coordinates.colTo) == 1 &&
+                !isMoveBackwards(coordinates)
+
+    }
+
+  learner_created: false
+- name: src/chess/Player.kt
+  visible: true
+  text: |-
+    package chess
+
+    class Player(val name: String, val playingColor: Color) {
+
+        var played = false
+
+        fun move(fromTo: String) {
+            played = CommandReader.checkMoveFormat(fromTo)
+        }
+    }
+  learner_created: false
+- name: src/chess/Column.kt
+  visible: true
+  text: |-
+    package chess
+
+    enum class Column(val printableVal: String, val matrixVal: Int) {
+        COLUMN_1("a", 0),
+        COLUMN_2("b", 1),
+        COLUMN_3("c", 2),
+        COLUMN_4("d", 3),
+        COLUMN_5("e", 4),
+        COLUMN_6("f", 5),
+        COLUMN_7("g", 6),
+        COLUMN_8("h", 7);
+
+        companion object {
+            fun getMatrixColumn(printableValue: String): Int {
+                for (v in values()) {
+                    if (v.printableVal == printableValue) {
+                        return v.matrixVal
+                    }
+                }
+                return -1
+            }
+
+            fun getPrintableColumn(matrixValue: Int): String {
+                for (v in values()) {
+                    if (v.matrixVal == matrixValue) {
+                        return v.printableVal
+                    }
+                }
+                return ""
+            }
+        }
+    }
+  learner_created: false
+- name: src/chess/CommandReader.kt
+  visible: true
+  text: |-
+    package chess
+
+    class CommandReader {
+        companion object {
+            val movePattern = "[a-h][1-8][a-h][1-8]".toRegex()
+            fun checkMoveFormat(move: String): Boolean = move.matches(movePattern)
+
+            fun getCoordsFromCommand(command: String): Coordinates {
+                return Coordinates(
+                    Column.getMatrixColumn(command[0].toString()),
+                    Row.getMatrixRow(command[1].toString()),
+                    Column.getMatrixColumn(command[2].toString()),
+                    Row.getMatrixRow(command[3].toString())
+                )
+            }
+
+            fun checkCommand(pawn: Pawn, coordinates: Coordinates): String {
+                if (pawn.move(coordinates)) {
+                    return "move"
+                }
+                if (pawn.capture(coordinates)) {
+                    return "capture"
+                }
+                return ""
+            }
+        }
+
+
+    }
+  learner_created: false
+- name: src/chess/Board2.kt
+  visible: true
+  learner_created: true
+- name: src/chess/WinnerChecker.kt
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/projects/182/stages/926/implement#comment
+status: Failed
+record: 4
