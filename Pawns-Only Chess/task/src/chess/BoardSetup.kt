@@ -1,6 +1,6 @@
 package chess
 
-class Board2 {
+class BoardSetup {
 
     val emptySpace = "   "
     val horLinePattern = "  " + "+---".repeat(8) + "+"

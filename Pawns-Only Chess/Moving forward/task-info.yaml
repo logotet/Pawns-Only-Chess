@@ -624,6 +624,6 @@ files:
 - name: src/chess/Column.kt
   visible: true
   learner_created: true
-feedback_link: https://hyperskill.org/projects/182/stages/924/implement#comment
+feedback_link: https://hyperskill.org/learn/step/13176#comment
 status: Solved
 record: 2

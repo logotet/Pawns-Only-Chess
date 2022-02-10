@@ -1100,12 +1100,12 @@ files:
 
     }
   learner_created: false
-- name: src/chess/Board2.kt
-  visible: true
-  learner_created: true
 - name: src/chess/WinnerChecker.kt
   visible: true
   learner_created: true
-feedback_link: https://hyperskill.org/projects/182/stages/926/implement#comment
+- name: src/chess/BoardSetup.kt
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/13178#comment
 status: Failed
 record: 4

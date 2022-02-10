@@ -3,78 +3,11 @@ package chess
 import kotlin.math.abs
 
 class Board {
-    val emptySpace = "   "
-    val horLinePattern = "  " + "+---".repeat(8) + "+"
-    val fieldPattern = "|"
-    var bottomLine = getBottomLinePattern()
-    val matrixBoard = createMatrixBoar22()
+    var boardSetup:BoardSetup = BoardSetup()
     var figurePlaying: Figure? = null
     var currentPlayer: Player? = null
     val prompter = Prompter()
-
-    private fun getBottomLinePattern(): String {
-        var line = "$emptySpace "
-        for (c in 'a'..'h') {
-            line += c + emptySpace
-        }
-        return line
-    }
-
-    fun printBoard() {
-        for (i in 8 downTo 1) {
-            println(horLinePattern)
-            when (i) {
-                8 -> println("$i ${getRow(0)}")
-                7 -> println("$i ${getRow(1)}")
-                6 -> println("$i ${getRow(2)}")
-                5 -> println("$i ${getRow(3)}")
-                4 -> println("$i ${getRow(4)}")
-                3 -> println("$i ${getRow(5)}")
-                2 -> println("$i ${getRow(6)}")
-                1 -> println("$i ${getRow(7)}")
-                else -> println("$i ${(fieldPattern + emptySpace).repeat(9)}")
-            }
-        }
-        println(horLinePattern)
-        println(bottomLine)
-    }
-
-    fun createMatrixBoard(): MutableList<MutableList<Figure>> {
-        return mutableListOf(
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { Pawn("B") },
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { Pawn("W") },
-            MutableList(8) { EmptyFigure() },
-        )
-    }
-
-    fun createMatrixBoar22(): MutableList<MutableList<Figure>> {
-        return mutableListOf(
-            MutableList(8) { EmptyFigure() },
-            mutableListOf(EmptyFigure(), EmptyFigure(), EmptyFigure(), EmptyFigure(),
-                EmptyFigure(),EmptyFigure(),EmptyFigure(),Pawn("B")),
-            mutableListOf(EmptyFigure(), EmptyFigure(), EmptyFigure(), EmptyFigure(),
-                EmptyFigure(),EmptyFigure(),Pawn("B"),Pawn("W")),
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { Pawn("W") },
-            MutableList(8) { EmptyFigure() },
-        )
-    }
-
-    fun getRow(line: Int): String {
-        var row = ""
-        for (element in matrixBoard[line]) {
-            row = row.plus("$fieldPattern ${element.color} ")
-        }
-        row = row.plus(fieldPattern)
-        return row
-    }
+    val matrixBoard = boardSetup.createMatrixBoar22()
 
     fun executeMove(fromTo: String = "c2c4"): Boolean {
         figurePlaying = null
@@ -84,7 +17,7 @@ class Board {
         if (!valid) {
             return false
         }
-        var command = CommandReader.checkCommand((figurePlaying as Pawn), coords)
+        val command = CommandReader.checkCommand((figurePlaying as Pawn), coords)
         return when (command) {
             "move" -> {
                 if (!isCellWithEnemy(coords.rowTo, coords.colTo)) {
@@ -122,7 +55,7 @@ class Board {
         matrixBoard[coords.rowTo][coords.colTo] = figurePlaying!!
         matrixBoard[coords.rowFrom][coords.colFrom] = EmptyFigure()
         matrixBoard[coords.rowFrom][coords.colTo] = EmptyFigure()
-        printBoard()
+        boardSetup.printBoard()
     }
 
     private fun executeCapture(coords: Coordinates) {
@@ -131,7 +64,7 @@ class Board {
         (figurePlaying as Pawn).secondMove = (figurePlaying as Pawn).firstMove
         (figurePlaying as Pawn).firstMove = false
         disableEnPassantOption()
-        printBoard()
+        boardSetup.printBoard()
     }
 
     private fun executePawnMove(coords: Coordinates) {
@@ -143,7 +76,7 @@ class Board {
         if (abs(coords.rowFrom - coords.rowTo) == 2) {
             (figurePlaying as Pawn).enPassantAvlb = true
         }
-        printBoard()
+        boardSetup.printBoard()
     }
 
     private fun checkIfMoveIsValid(coords: Coordinates): Boolean {
@@ -196,18 +129,6 @@ class Board {
     fun getFigure(row: Int, col: Int): Figure = matrixBoard[row][col]
 
     fun disableEnPassantOption() {
-//        var totalAvlbEnP = 0
-//        for (piece in matrixBoard[Row.getMatrixRow("5")]) {
-//            if (piece is Pawn && (piece as Pawn).enPassantAvlb) {
-//                totalAvlbEnP++
-//            }
-//        }
-//        for (piece in matrixBoard[Row.getMatrixRow("4")]) {
-//            if (piece is Pawn && (piece as Pawn).enPassantAvlb) {
-//                totalAvlbEnP++
-//            }
-//        }
-//        println(totalAvlbEnP)
         disableEnpassantForRow("5")
         disableEnpassantForRow("4")
     }
@@ -221,13 +142,3 @@ class Board {
     }
 }
 
-//private fun executeEnPassant(coords: Coordinates) {
-//    if((matrixBoard[coords.rowFrom][coords.colTo] as Pawn).enPassantAvlb) {
-//        matrixBoard[coords.rowTo][coords.colTo] = figurePlaying!!
-//        matrixBoard[coords.rowFrom][coords.colFrom] = EmptyFigure()
-//        matrixBoard[coords.rowFrom][coords.colTo] = EmptyFigure()
-//        printBoard()
-//    }else{
-//        prompter.invalidMove()
-//    }
-//}

@@ -10,8 +10,8 @@ fun main() {
     val playerTwo = players[1]
     var activePlayer: Player = playerOne
     board.currentPlayer = activePlayer
-    board.printBoard()
-    val matrixBoard = board.createMatrixBoard()
+    board.boardSetup.printBoard()
+//    val matrixBoard = board.createBoardSetup()
 
     prompter.playersMove(activePlayer)
     var command = prompter.askForInput()

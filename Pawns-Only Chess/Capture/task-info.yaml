@@ -1435,6 +1435,6 @@ files:
 - name: src/chess/CommandReader.kt
   visible: true
   learner_created: true
-feedback_link: https://hyperskill.org/projects/182/stages/925/implement#comment
+feedback_link: https://hyperskill.org/learn/step/13177#comment
 status: Solved
 record: 3
