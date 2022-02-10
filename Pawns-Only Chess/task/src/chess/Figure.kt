@@ -2,36 +2,16 @@ package chess
 
 import kotlin.math.abs
 
-abstract class Figure(val color: String) {
-    abstract fun move(coordinates: Coordinates): Boolean
-}
+abstract class Figure(val color: String)
 
-data class EmptyFigure(val emptyColor: String = " ") : Figure(emptyColor) {
-    override fun move(coordinates: Coordinates): Boolean {
-        TODO("Not yet implemented")
-    }
-}
+data class EmptyCell(val emptyColor: String = " ") : Figure(emptyColor)
 
-data class Pawn(val pawnColor: String, val name: String = " P ") : Figure(pawnColor) {
+data class Pawn(val pawnColor: String) : Figure(pawnColor) {
     var firstMove = true
     var secondMove = false
     var enPassantAvlb = false
 
-    override fun move(coordinates: Coordinates): Boolean {
-//        if(!firstMove &&abs(coordinates.rowFrom - coordinates.rowTo) == 1 &&
-//            coordinates.colFrom != coordinates.colTo && !isMoveBackwards(coordinates)
-//                ){
-//            return true
-//        }
-//        else if(firstMove &&
-//            abs(coordinates.rowFrom - coordinates.rowTo) == 1 ||
-//            abs(coordinates.rowFrom - coordinates.rowTo) == 2 &&
-//            coordinates.colFrom != coordinates.colTo && !isMoveBackwards(coordinates)
-//        ){
-//            return true
-//        }else{
-//            return false
-//        }
+    fun move(coordinates: Coordinates): Boolean {
         return if (coordinates.colFrom != coordinates.colTo) {
             false
         } else if (isMoveBackwards(coordinates)) {

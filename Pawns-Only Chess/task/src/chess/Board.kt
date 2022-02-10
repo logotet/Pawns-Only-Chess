@@ -7,6 +7,8 @@ class Board {
     val fieldPattern = "|"
     var bottomLine = getBottomLinePattern()
     val matrixBoard = createMatrixBoard()
+//    val matrixBoard = createMatrixBoar22()
+
 
     fun printBoard() {
         for (i in 8 downTo 1) {
@@ -38,29 +40,29 @@ class Board {
 
     fun createMatrixBoard(): MutableList<MutableList<Figure>> {
         return mutableListOf(
-            MutableList(8) { EmptyFigure() },
+            MutableList(8) { EmptyCell() },
             MutableList(8) { Pawn("B") },
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { EmptyFigure() },
+            MutableList(8) { EmptyCell() },
+            MutableList(8) { EmptyCell() },
+            MutableList(8) { EmptyCell() },
+            MutableList(8) { EmptyCell() },
             MutableList(8) { Pawn("W") },
-            MutableList(8) { EmptyFigure() },
+            MutableList(8) { EmptyCell() },
         )
     }
 
     fun createMatrixBoar22(): MutableList<MutableList<Figure>> {
         return mutableListOf(
-            MutableList(8) { EmptyFigure() },
-            mutableListOf(EmptyFigure(), EmptyFigure(), EmptyFigure(), EmptyFigure(),
-                EmptyFigure(),EmptyFigure(),EmptyFigure(),Pawn("B")),
-            mutableListOf(EmptyFigure(), EmptyFigure(), EmptyFigure(), EmptyFigure(),
-                EmptyFigure(),EmptyFigure(),Pawn("B"),Pawn("W")),
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { EmptyFigure() },
-            MutableList(8) { EmptyFigure() },
+            MutableList(8) { EmptyCell() },
+            mutableListOf(EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
+                EmptyCell(),EmptyCell(),EmptyCell(),Pawn("B")),
+            mutableListOf(EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
+                EmptyCell(),EmptyCell(),Pawn("B"),Pawn("W")),
+            MutableList(8) { EmptyCell() },
+            MutableList(8) { EmptyCell() },
+            MutableList(8) { EmptyCell() },
             MutableList(8) { Pawn("W") },
-            MutableList(8) { EmptyFigure() },
+            MutableList(8) { EmptyCell() },
         )
     }
 

@@ -14,8 +14,8 @@ class CommandReader {
             )
         }
 
-        fun checkCommand(pawn: Pawn, coordinates: Coordinates): String {
-            if (pawn.move(coordinates)) {
+        fun checkCommand(pawn: Pawn?, coordinates: Coordinates): String {
+            if (pawn!!.move(coordinates)) {
                 return "move"
             }
             if (pawn.capture(coordinates)) {
