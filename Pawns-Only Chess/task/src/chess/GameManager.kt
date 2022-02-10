@@ -6,9 +6,9 @@ import kotlin.math.abs
 class GameManager {
     var board:Board = Board()
     var figurePlaying: Pawn? = null
-    var currentPlayer: Player? = null
+    lateinit var currentPlayer: Player
     val prompter = Prompter()
-    val matrixBoard = board.createMatrixBoar22()
+    val matrixBoard = board.matrixBoard
 
     fun executeMove(fromTo: String): Boolean {
         figurePlaying = null
@@ -91,9 +91,9 @@ class GameManager {
 //            Column.getPrintableColumn(coords.colFrom)
 //            false
 //        }
-        else if (figurePlaying!!.color != currentPlayer!!.playingColor.letter) {
+        else if (figurePlaying!!.color != currentPlayer.playingColor.letter) {
             prompter.noAvlbFigure(
-                currentPlayer!!.playingColor.fullName, Column.getPrintableColumn(coords.colFrom) +
+                currentPlayer.playingColor.fullName, Column.getPrintableColumn(coords.colFrom) +
                         Row.getPrintableRow(coords.rowFrom)
             )
             Column.getPrintableColumn(coords.colFrom)
@@ -107,10 +107,10 @@ class GameManager {
 
     private fun isAllowedFigure(coords: Coordinates): Boolean {
         return if (isCellEmpty(coords.rowFrom, coords.colFrom) ||
-            currentPlayer!!.playingColor.letter.trim() != figurePlaying!!.color.trim()
+            currentPlayer.playingColor.letter.trim() != figurePlaying!!.color.trim()
         ) {
             println(
-                "No ${currentPlayer!!.playingColor.fullName} pawn at " +
+                "No ${currentPlayer.playingColor.fullName} pawn at " +
                         "${Column.getPrintableColumn(coords.colFrom)}${Row.getPrintableRow(coords.rowFrom)}"
             )
             Column.getPrintableColumn(coords.colFrom)
@@ -128,7 +128,7 @@ class GameManager {
             figurePlaying = matrixBoard[row][col] as Pawn
         }catch (e: ClassCastException){
             prompter.noAvlbFigure(
-                currentPlayer!!.playingColor.fullName, Column.getPrintableColumn(col) +
+                currentPlayer.playingColor.fullName, Column.getPrintableColumn(col) +
                         Row.getPrintableRow(row)
             )
             Column.getPrintableColumn(col)
