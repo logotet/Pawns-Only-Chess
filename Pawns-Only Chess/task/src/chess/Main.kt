@@ -14,9 +14,18 @@ fun main() {
     var command = prompter.askForInput()
 
     while (command != "exit") {
+
         activePlayer.move(command)
-        if(gameManager.executeMove(command)) {
+        if (gameManager.executeMove(command)) {
             if (activePlayer.played) {
+
+                if (WinnerChecker.checkLastRows(gameManager.matrixBoard) ||
+                    WinnerChecker.enemyGone(gameManager.matrixBoard)
+                ) {
+                    prompter.win(activePlayer.playingColor.fullName)
+                    break
+                }
+
                 activePlayer = if (activePlayer == playerOne) {
                     playerTwo
                 } else {

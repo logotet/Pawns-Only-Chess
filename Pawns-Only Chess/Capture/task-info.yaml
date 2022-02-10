@@ -192,54 +192,6 @@ files:
         }
     }
   learner_created: false
-- name: src/chess/Row.kt
-  visible: true
-  text: |-
-    package chess
-
-    enum class Row(val printableVal: Int, val matrixVal: Int) {
-        ROW_1(1, 7),
-        ROW_2(2, 6),
-        ROW_3(3, 5),
-        ROW_4(4, 4),
-        ROW_5(5, 3),
-        ROW_6(6, 2),
-        ROW_7(7, 1),
-        ROW_8(8, 0);
-
-        companion object {
-            fun getMatrixRow(pritableValue: String): Int {
-                for (r in values()) {
-                    if (r.printableVal == pritableValue.toInt()) {
-                        return r.matrixVal
-                    }
-                }
-                return -1
-            }
-
-            fun getPrintableRow(matrixValue: Int): String {
-                for (r in values()) {
-                    if (r.matrixVal == matrixValue) {
-                        return r.printableVal.toString()
-                    }
-                }
-                return "-1"
-            }
-        }
-    }
-  learner_created: false
-- name: src/chess/Coordinates.kt
-  visible: true
-  text: |-
-    package chess
-
-    class Coordinates(
-        val colFrom: Int,
-        var rowFrom: Int,
-        var colTo: Int,
-        var rowTo: Int
-    )
-  learner_created: false
 - name: src/chess/Figure.kt
   visible: true
   text: |
@@ -301,52 +253,6 @@ files:
         fun move(fromTo: String) {
             played = CommandFormatter.checkMoveFormat(fromTo)
         }
-    }
-  learner_created: false
-- name: src/chess/Column.kt
-  visible: true
-  text: |-
-    package chess
-
-    enum class Column(val printableVal: String, val matrixVal: Int) {
-        COLUMN_1("a", 0),
-        COLUMN_2("b", 1),
-        COLUMN_3("c", 2),
-        COLUMN_4("d", 3),
-        COLUMN_5("e", 4),
-        COLUMN_6("f", 5),
-        COLUMN_7("g", 6),
-        COLUMN_8("h", 7);
-
-        companion object {
-            fun getMatrixColumn(printableValue: String): Int {
-                for (v in values()) {
-                    if (v.printableVal == printableValue) {
-                        return v.matrixVal
-                    }
-                }
-                return -1
-            }
-
-            fun getPrintableColumn(matrixValue: Int): String {
-                for (v in values()) {
-                    if (v.matrixVal == matrixValue) {
-                        return v.printableVal
-                    }
-                }
-                return ""
-            }
-        }
-    }
-  learner_created: false
-- name: src/chess/Color.kt
-  visible: true
-  text: |-
-    package chess
-
-    enum class Color(val letter: String, val fullName: String) {
-        WHITE("W", "white"),
-        BLACK("B", "black")
     }
   learner_created: false
 - name: test/PawnsOnlyChessTest.kt
@@ -1432,7 +1338,25 @@ files:
 
 
   learner_created: false
-- name: src/chess/CommandReader.kt
+- name: src/chess/GameManager.kt
+  visible: true
+  learner_created: true
+- name: src/chess/utils/CommandReader.kt
+  visible: true
+  learner_created: true
+- name: src/chess/utils/Coordinates.kt
+  visible: true
+  learner_created: true
+- name: src/chess/utils/Row.kt
+  visible: true
+  learner_created: true
+- name: src/chess/utils/Column.kt
+  visible: true
+  learner_created: true
+- name: src/chess/utils/Color.kt
+  visible: true
+  learner_created: true
+- name: src/chess/WinnerChecker.kt
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/13177#comment

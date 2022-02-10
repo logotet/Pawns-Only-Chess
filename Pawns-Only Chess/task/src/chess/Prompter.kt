@@ -34,6 +34,11 @@ class Prompter {
             )
     }
 
+    fun win(color: String){
+        val col = color.first().toUpperCase() + color.substring(1)
+        println("$col Wins!")
+    }
+
     fun exitProgram() {
         println("Bye!")
     }

@@ -21,7 +21,7 @@ class WinnerChecker {
             return false
         }
 
-        fun checkLastRow(board: MutableList<MutableList<Figure>>):Boolean{
+        fun checkLastRows(board: MutableList<MutableList<Figure>>):Boolean{
             for (piece in board[0]) {
                 if (piece is Pawn && piece.color.trim() == Color.WHITE.letter.trim()) {
                     return true
