@@ -16,6 +16,8 @@ data class Pawn(val pawnColor: String) : Figure(pawnColor) {
             false
         } else if (isMoveBackwards(coordinates)) {
             false
+        } else if (coordinates.colTo > 7 || coordinates.rowTo > 7) {
+            false
         } else if (abs(coordinates.rowFrom - coordinates.rowTo) == 1) {
             enPassantAvlb = false
             true

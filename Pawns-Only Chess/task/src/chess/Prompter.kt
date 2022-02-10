@@ -39,6 +39,10 @@ class Prompter {
         println("$col Wins!")
     }
 
+    fun stalemate(){
+        println("Stalemate!")
+    }
+
     fun exitProgram() {
         println("Bye!")
     }

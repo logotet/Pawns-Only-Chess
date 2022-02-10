@@ -8,6 +8,7 @@ class GameManager {
     var figurePlaying: Pawn? = null
     var currentPlayer: Player? = null
     val prompter = Prompter()
+    var staleMate = false
     val matrixBoard = board.matrixBoard
 
     fun executeMove(fromTo: String): Boolean {
@@ -150,5 +151,6 @@ class GameManager {
             }
         }
     }
+
 }
 

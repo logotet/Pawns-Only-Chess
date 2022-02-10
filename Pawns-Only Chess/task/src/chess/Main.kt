@@ -25,7 +25,6 @@ fun main() {
                     prompter.win(activePlayer.playingColor.fullName)
                     break
                 }
-
                 activePlayer = if (activePlayer == playerOne) {
                     playerTwo
                 } else {
@@ -35,6 +34,11 @@ fun main() {
                 prompter.invalidMove()
             }
             gameManager.currentPlayer = activePlayer
+        }
+        if(WinnerChecker.checkIfStalemate(gameManager.matrixBoard,
+                gameManager.figurePlaying!!)){
+            prompter.stalemate()
+            break
         }
         prompter.playersMove(activePlayer)
         command = prompter.askForInput()

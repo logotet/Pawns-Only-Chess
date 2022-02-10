@@ -6,8 +6,8 @@ class Board {
     val horLinePattern = "  " + "+---".repeat(8) + "+"
     val fieldPattern = "|"
     var bottomLine = getBottomLinePattern()
-//    val matrixBoard = createMatrixBoard()
-    val matrixBoard = createMatrixBoardWin()
+    val matrixBoard = createMatrixBoard()
+//    val matrixBoard = createMatrixBoardStalemate()
 
 
     fun printBoard() {
@@ -79,15 +79,37 @@ class Board {
             ),
             mutableListOf(
                 EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
-                EmptyCell(), EmptyCell(), Pawn("W"), Pawn("B")
+                EmptyCell(), EmptyCell(), Pawn("W"), Pawn("W")
             ),
             MutableList(8) { EmptyCell() },
             MutableList(8) { EmptyCell() },
             MutableList(8) { EmptyCell() },
             mutableListOf(
                 EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
+                EmptyCell(), EmptyCell(), Pawn("W"), Pawn("W")
+            ),
+            MutableList(8) { EmptyCell() },
+        )
+    }
+
+    fun createMatrixBoardStalemate(): MutableList<MutableList<Figure>> {
+        return mutableListOf(
+            MutableList(8) { EmptyCell() },
+            mutableListOf(
+                EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
                 EmptyCell(), EmptyCell(), Pawn("B"), Pawn("B")
             ),
+            MutableList(8) { EmptyCell() },
+            mutableListOf(
+                EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
+                EmptyCell(), EmptyCell(), Pawn("B"), EmptyCell()
+            ),
+            mutableListOf(
+                EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
+                EmptyCell(), EmptyCell(), EmptyCell(),Pawn("W")
+            ),
+            MutableList(8) { EmptyCell() },
+            MutableList(8) { EmptyCell() },
             MutableList(8) { EmptyCell() },
         )
     }
