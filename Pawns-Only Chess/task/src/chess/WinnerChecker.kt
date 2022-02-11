@@ -2,6 +2,9 @@ package chess
 
 class WinnerChecker {
     companion object {
+        /*
+        Checks if there are any enemies left on the board.
+         */
         fun enemyGone(board: MutableList<MutableList<Figure>>): Boolean {
             var blacks = 0
             var whites = 0
@@ -21,6 +24,9 @@ class WinnerChecker {
             return false
         }
 
+        /*
+        Checks the last rows for enemy figure.
+         */
         fun checkLastRows(board: MutableList<MutableList<Figure>>): Boolean {
             for (piece in board[0]) {
                 if (piece is Pawn && piece.color.trim() == Color.WHITE.letter.trim()) {
@@ -35,6 +41,11 @@ class WinnerChecker {
             return false
         }
 
+        /*
+        Checks every piece on the board with all possible moves.
+        False returns there is at least one possibility for a move.
+        True means stalemate.
+         */
         fun checkIfStalemate(board: MutableList<MutableList<Figure>>, pawn: Pawn): Boolean {
             for (row in board.indices) {
                 for (col in board.indices) {
@@ -42,15 +53,21 @@ class WinnerChecker {
                     if (piece !is EmptyCell && piece.color != pawn.color) {
                         val allPossibleMoves = getAllPossibleMoves(row, col)
                         for (coords in allPossibleMoves) {
-                            val f = board[2][7]
+
                             if ((piece as Pawn).move(coords) &&
-//                                piece.capture(coords) &&
                                 coords.colTo < 8 &&
                                 coords.rowTo < 8 &&
                                 board[coords.rowTo][coords.colTo] !is Pawn
                             ) {
-                                    return false
+                                return false
                             }
+                            if ((piece as Pawn).capture(coords)&&
+                                coords.colTo < 8 &&
+                                    coords.rowTo < 8
+                            ) {
+                                return false
+                            }
+
                         }
                     }
                 }
