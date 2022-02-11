@@ -7,8 +7,6 @@ class Board {
     val fieldPattern = "|"
     var bottomLine = getBottomLinePattern()
     val matrixBoard = createMatrixBoard()
-//    val matrixBoard = createMatrixBoardStalemate()
-
 
     fun printBoard() {
         for (i in 8 downTo 1) {
@@ -51,68 +49,6 @@ class Board {
         )
     }
 
-    fun createMatrixBoardEnpassant(): MutableList<MutableList<Figure>> {
-        return mutableListOf(
-            MutableList(8) { EmptyCell() },
-            mutableListOf(
-                EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
-                EmptyCell(), EmptyCell(), EmptyCell(), Pawn("B")
-            ),
-            mutableListOf(
-                EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
-                EmptyCell(), EmptyCell(), Pawn("B"), Pawn("W")
-            ),
-            MutableList(8) { EmptyCell() },
-            MutableList(8) { EmptyCell() },
-            MutableList(8) { EmptyCell() },
-            MutableList(8) { Pawn("W") },
-            MutableList(8) { EmptyCell() },
-        )
-    }
-
-    fun createMatrixBoardWin(): MutableList<MutableList<Figure>> {
-        return mutableListOf(
-            MutableList(8) { EmptyCell() },
-            mutableListOf(
-                 EmptyCell(), Pawn("W"),EmptyCell(), EmptyCell(),
-                EmptyCell(), EmptyCell(), EmptyCell(), Pawn("B")
-            ),
-            mutableListOf(
-                EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
-                EmptyCell(), EmptyCell(), Pawn("W"), Pawn("W")
-            ),
-            MutableList(8) { EmptyCell() },
-            MutableList(8) { EmptyCell() },
-            MutableList(8) { EmptyCell() },
-            mutableListOf(
-                EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
-                EmptyCell(), EmptyCell(), Pawn("W"), Pawn("W")
-            ),
-            MutableList(8) { EmptyCell() },
-        )
-    }
-
-    fun createMatrixBoardStalemate(): MutableList<MutableList<Figure>> {
-        return mutableListOf(
-            MutableList(8) { EmptyCell() },
-            mutableListOf(
-                EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
-                EmptyCell(), EmptyCell(), Pawn("B"), Pawn("B")
-            ),
-            MutableList(8) { EmptyCell() },
-            mutableListOf(
-                EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
-                EmptyCell(), EmptyCell(), Pawn("B"), EmptyCell()
-            ),
-            mutableListOf(
-                EmptyCell(), EmptyCell(), EmptyCell(), EmptyCell(),
-                EmptyCell(), EmptyCell(), EmptyCell(),Pawn("W")
-            ),
-            MutableList(8) { EmptyCell() },
-            MutableList(8) { EmptyCell() },
-            MutableList(8) { EmptyCell() },
-        )
-    }
 
     private fun getBottomLinePattern(): String {
         var line = "$emptySpace "
