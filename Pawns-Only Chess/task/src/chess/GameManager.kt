@@ -4,13 +4,13 @@ import java.lang.ClassCastException
 import kotlin.math.abs
 
 class GameManager {
-    var board:Board = Board()
+    var board: Board = Board()
     var figurePlaying: Pawn? = null
     var currentPlayer: Player? = null
     val prompter = Prompter()
-    var staleMate = false
     val matrixBoard = board.matrixBoard
 
+    //TODO Refactor the move execution as now is too complex and the logice is scattered
     fun executeMove(fromTo: String): Boolean {
         figurePlaying = null
         val coords = CommandReader.getCoordsFromCommand(fromTo)
@@ -35,7 +35,7 @@ class GameManager {
                     executeCapture(coords)
                     true
                 } else if (matrixBoard[coords.rowFrom][coords.colTo] is Pawn && (matrixBoard[coords.rowFrom][coords.colTo] as Pawn).enPassantAvlb &&
-                        isCellEmpty(coords.rowTo, coords.colTo) && coords.rowFrom == Row.getMatrixRow("5") ||
+                    isCellEmpty(coords.rowTo, coords.colTo) && coords.rowFrom == Row.getMatrixRow("5") ||
                     coords.rowFrom == Row.getMatrixRow("4")
                 ) {
                     executeEnPassant(coords)
@@ -83,16 +83,7 @@ class GameManager {
     private fun checkIfMoveIsValid(coords: Coordinates): Boolean {
         return if (figurePlaying == null) {
             false
-        }
-//        else if (figurePlaying !is Pawn) {
-//            prompter.noAvlbFigure(
-//                currentPlayer!!.playingColor.fullName, Column.getPrintableColumn(coords.colFrom) +
-//                        Row.getPrintableRow(coords.rowFrom)
-//            )
-//            Column.getPrintableColumn(coords.colFrom)
-//            false
-//        }
-        else if (figurePlaying!!.color != currentPlayer!!.playingColor.letter) {
+        } else if (figurePlaying!!.color != currentPlayer!!.playingColor.letter) {
             prompter.noAvlbFigure(
                 currentPlayer!!.playingColor.fullName, Column.getPrintableColumn(coords.colFrom) +
                         Row.getPrintableRow(coords.rowFrom)
@@ -127,7 +118,7 @@ class GameManager {
     private fun pickCurrentFigure(row: Int, col: Int) {
         try {
             figurePlaying = matrixBoard[row][col] as Pawn
-        }catch (e: ClassCastException){
+        } catch (e: ClassCastException) {
             prompter.noAvlbFigure(
                 currentPlayer!!.playingColor.fullName, Column.getPrintableColumn(col) +
                         Row.getPrintableRow(row)

@@ -14,7 +14,6 @@ fun main() {
     var command = prompter.askForInput()
 
     while (command != "exit") {
-
         activePlayer.move(command)
         if (gameManager.executeMove(command)) {
             if (activePlayer.played) {
@@ -35,8 +34,11 @@ fun main() {
             }
             gameManager.currentPlayer = activePlayer
         }
-        if(WinnerChecker.checkIfStalemate(gameManager.matrixBoard,
-                gameManager.figurePlaying!!)){
+        if (WinnerChecker.checkIfStalemate(
+                gameManager.matrixBoard,
+                gameManager.figurePlaying!!
+            )
+        ) {
             prompter.stalemate()
             break
         }

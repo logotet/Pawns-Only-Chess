@@ -1106,31 +1106,13 @@ files:
         var rowTo: Int
     )
   learner_created: false
+- name: src/chess/utils/DummyBoards.kt
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/13178#comment
-status: Failed
+status: Solved
 feedback:
-  message: "Wrong answer in test #1\n\nPlayer 2 prompt to play is expected.\n\nPlease\
-    \ find below the output of your program during this failed test.\nNote that the\
-    \ &#39;&gt;&#39; character indicates the beginning of the input line.\n\n---\n\
-    \nPawns-Only Chess\nFirst Player&#39;s name:\n&gt; &gt; John\nSecond Player&#39;s\
-    \ name:\n&gt; &gt; Amelia\n  +---+---+---+---+---+---+---+---+\n8 |   |   |  \
-    \ |   |   |   |   |   |\n  +---+---+---+---+---+---+---+---+\n7 | B | B | B |\
-    \ B | B | B | B | B |\n  +---+---+---+---+---+---+---+---+\n6 |   |   |   |  \
-    \ |   |   |   |   |\n  +---+---+---+---+---+---+---+---+\n5 |   |   |   |   |\
-    \   |   |   |   |\n  +---+---+---+---+---+---+---+---+\n4 |   |   |   |   |  \
-    \ |   |   |   |\n  +---+---+---+---+---+---+---+---+\n3 |   |   |   |   |   |\
-    \   |   |   |\n  +---+---+---+---+---+---+---+---+\n2 | W | W | W | W | W | W\
-    \ | W | W |\n  +---+---+---+---+---+---+---+---+\n1 |   |   |   |   |   |   |\
-    \   |   |\n  +---+---+---+---+---+---+---+---+\n    a   b   c   d   e   f   g\
-    \   h   \nJohn&#39;s turn:\n&gt; &gt; e2e4\n  +---+---+---+---+---+---+---+---+\n\
-    8 |   |   |   |   |   |   |   |   |\n  +---+---+---+---+---+---+---+---+\n7 |\
-    \ B | B | B | B | B | B | B | B |\n  +---+---+---+---+---+---+---+---+\n6 |  \
-    \ |   |   |   |   |   |   |   |\n  +---+---+---+---+---+---+---+---+\n5 |   |\
-    \   |   |   |   |   |   |   |\n  +---+---+---+---+---+---+---+---+\n4 |   |  \
-    \ |   |   | W |   |   |   |\n  +---+---+---+---+---+---+---+---+\n3 |   |   |\
-    \   |   |   |   |   |   |\n  +---+---+---+---+---+---+---+---+\n2 | W | W | W\
-    \ | W |   | W | W | W |\n  +---+---+---+---+---+---+---+---+\n1 |   |   |   |\
-    \   |   |   |   |   |\n  +---+---+---+---+---+---+---+---+\n    a   b   c   d\
-    \   e   f   g   h   \nStalemate!\nBye!"
-  time: Thu, 10 Feb 2022 22:00:17 UTC
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">JetBrains
+    Academy</a> to continue learning.
+  time: Fri, 11 Feb 2022 20:15:55 UTC
 record: 4
