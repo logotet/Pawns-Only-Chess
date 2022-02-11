@@ -14,6 +14,13 @@ class CommandReader {
             )
         }
 
+        fun getCommandFromCoords(coordinates: Coordinates): String{
+            return Column.getPrintableColumn(coordinates.colFrom) +
+                    Row.getPrintableRow(coordinates.colFrom) +
+                    Column.getPrintableColumn(coordinates.colTo) +
+                    Row.getPrintableRow(coordinates.colTo)
+        }
+
         fun checkCommand(pawn: Pawn?, coordinates: Coordinates): String {
             if (pawn!!.move(coordinates)) {
                 return "move"
