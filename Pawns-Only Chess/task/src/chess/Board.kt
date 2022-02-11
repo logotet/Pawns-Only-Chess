@@ -49,7 +49,6 @@ class Board {
         )
     }
 
-
     private fun getBottomLinePattern(): String {
         var line = "$emptySpace "
         for (c in 'a'..'h') {
