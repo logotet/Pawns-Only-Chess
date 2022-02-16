@@ -57,7 +57,6 @@ class WinnerChecker {
                     if (piece !is EmptyCell && piece.color != pawn.color) {
                         val allPossibleMoves = getAllPossibleMoves(row, col)
                         for (coords in allPossibleMoves) {
-
                             if (moveValidator.isValidPawnMove(coords, (piece as Pawn)) &&
                                 coords.colTo < 8 &&
                                 coords.rowTo < 8 &&
@@ -71,7 +70,6 @@ class WinnerChecker {
                             ) {
                                 return false
                             }
-
                         }
                     }
                 }

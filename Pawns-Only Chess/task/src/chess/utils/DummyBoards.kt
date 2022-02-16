@@ -26,7 +26,7 @@ class DummyBoards {
             )
         }
 
-        fun createMatrixBoardEnpassant(): MutableList<MutableList<Figure>> {
+        fun createMatrixBoardEnPassant(): MutableList<MutableList<Figure>> {
             return mutableListOf(
                 MutableList(8) { EmptyCell() },
                 mutableListOf(

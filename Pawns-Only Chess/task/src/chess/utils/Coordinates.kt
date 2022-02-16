@@ -18,5 +18,4 @@ class Coordinates(
         Coordinates(this.colFrom, this.rowFrom, this.colFrom, this.rowFrom+2),
         Coordinates(this.colFrom, this.rowFrom, this.colFrom, this.rowFrom-2),
     )
-
 }

@@ -3,10 +3,10 @@ package chess
 import kotlin.math.abs
 
 class MoveValidator {
-    fun isPlayableFigure(coords: Coordinates, figurePlaying: Figure?, currentPlayer: Player): Boolean {
-        return if (figurePlaying == null || figurePlaying.color != currentPlayer.playingColor.letter) {
+    fun isPlayableFigure(coords: Coordinates, figurePlaying: Figure?, playingColor: Color): Boolean {
+        return if (figurePlaying == null || figurePlaying.color != playingColor.letter) {
             Prompter.noAvlbFigure(
-                currentPlayer.playingColor.fullName, Column.getPrintableColumn(coords.colFrom) +
+                playingColor.fullName, Column.getPrintableColumn(coords.colFrom) +
                         Row.getPrintableRow(coords.rowFrom)
             )
             false

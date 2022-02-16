@@ -21,6 +21,4 @@ class CommandReader {
                     Row.getPrintableRow(coordinates.colTo)
         }
     }
-
-
 }

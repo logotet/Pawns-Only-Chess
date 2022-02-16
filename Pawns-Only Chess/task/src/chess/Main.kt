@@ -7,40 +7,41 @@ fun main() {
     val playerOne = players[0]
     val playerTwo = players[1]
     var activePlayer: Player = playerOne
-    gameManager.currentPlayer = activePlayer
+    gameManager.playingColor = activePlayer.playingColor
     gameManager.board.printBoard()
     Prompter.playersMove(activePlayer)
     var command = Prompter.askForInput()
 
     while (command != "exit") {
-        activePlayer.move(command)
+        if (!CommandReader.checkMoveFormat(command)) {
+            Prompter.invalidMove()
+            Prompter.playersMove(activePlayer)
+            command = Prompter.askForInput()
+            continue
+        }
         if (gameManager.executeMove(command)) {
-            if (activePlayer.played) {
-
-                if (WinnerChecker.checkLastRows(gameManager.matrixBoard) ||
-                    WinnerChecker.enemyGone(gameManager.matrixBoard)
-                ) {
-                    Prompter.win(activePlayer.playingColor.fullName)
-                    break
-                }
-                activePlayer = if (activePlayer == playerOne) {
-                    playerTwo
-                } else {
-                    playerOne
-                }
-            } else {
-                Prompter.invalidMove()
+            if (WinnerChecker.checkLastRows(gameManager.matrixBoard) ||
+                WinnerChecker.enemyGone(gameManager.matrixBoard)
+            ) {
+                Prompter.win(activePlayer.playingColor.fullName)
+                break
             }
-            gameManager.currentPlayer = activePlayer
+            if (WinnerChecker.checkIfStalemate(
+                    gameManager.matrixBoard,
+                    gameManager.figurePlaying
+                )
+            ) {
+                Prompter.stalemate()
+                break
+            }
+            activePlayer = if (activePlayer == playerOne) {
+                playerTwo
+            } else {
+                playerOne
+            }
+            gameManager.playingColor = activePlayer.playingColor
         }
-        if (WinnerChecker.checkIfStalemate(
-                gameManager.matrixBoard,
-                gameManager.figurePlaying
-            )
-        ) {
-            Prompter.stalemate()
-            break
-        }
+
         Prompter.playersMove(activePlayer)
         command = Prompter.askForInput()
     }

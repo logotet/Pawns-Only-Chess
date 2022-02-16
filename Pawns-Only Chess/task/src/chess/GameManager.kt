@@ -6,7 +6,7 @@ import kotlin.math.abs
 class GameManager {
     var board: Board = Board()
     var figurePlaying: Pawn? = null
-    var currentPlayer: Player? = null
+    lateinit var playingColor: Color
     val matrixBoard = board.matrixBoard
     private val moveValidator = MoveValidator()
 
@@ -14,7 +14,7 @@ class GameManager {
         figurePlaying = null
         val coords = CommandReader.getCoordsFromCommand(fromTo)
         pickCurrentFigure(coords.rowFrom, coords.colFrom)
-        val validFigure = moveValidator.isPlayableFigure(coords, figurePlaying, currentPlayer!!)
+        val validFigure = moveValidator.isPlayableFigure(coords, figurePlaying, playingColor)
         if (!validFigure) {
             return false
         }
@@ -32,7 +32,7 @@ class GameManager {
                 if (isCellWithEnemy(coords.rowTo, coords.colTo)) {
                     executeCapture(coords)
                     true
-                } else if (isValidEnPassant(coords)){
+                } else if (isValidEnPassant(coords)) {
                     executeEnPassant(coords)
                     true
                 } else {
@@ -83,13 +83,15 @@ class GameManager {
     private fun pickCurrentFigure(row: Int, col: Int) {
         try {
             figurePlaying = matrixBoard[row][col] as Pawn
-        } catch (_: ClassCastException) { }
+        } catch (_: ClassCastException) {
+        }
     }
 
-    fun isValidEnPassant(coords: Coordinates): Boolean{
-        return matrixBoard[coords.rowFrom][coords.colTo] is Pawn && (matrixBoard[coords.rowFrom][coords.colTo] as Pawn).enPassantAvlb &&
-                isCellEmpty(coords.rowTo, coords.colTo) && coords.rowFrom == Row.getMatrixRow("5") ||
-                coords.rowFrom == Row.getMatrixRow("4")
+    private fun isValidEnPassant(coords: Coordinates): Boolean {
+        return matrixBoard[coords.rowFrom][coords.colTo] is Pawn && (matrixBoard[coords.rowFrom][coords.colTo] as Pawn).enPassantAvlb && isCellEmpty(
+            coords.rowTo,
+            coords.colTo
+        ) && coords.rowFrom == Row.getMatrixRow("5") || coords.rowFrom == Row.getMatrixRow("4")
     }
 
     private fun disableEnPassantOption() {
