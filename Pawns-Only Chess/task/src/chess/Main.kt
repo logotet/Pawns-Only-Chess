@@ -2,16 +2,15 @@ package chess
 
 fun main() {
     val gameManager = GameManager()
-    val prompter = Prompter()
-    prompter.printTitle()
-    val players = prompter.getPlayersNames()
+    Prompter.printTitle()
+    val players = Prompter.getPlayersNames()
     val playerOne = players[0]
     val playerTwo = players[1]
     var activePlayer: Player = playerOne
     gameManager.currentPlayer = activePlayer
     gameManager.board.printBoard()
-    prompter.playersMove(activePlayer)
-    var command = prompter.askForInput()
+    Prompter.playersMove(activePlayer)
+    var command = Prompter.askForInput()
 
     while (command != "exit") {
         activePlayer.move(command)
@@ -21,7 +20,7 @@ fun main() {
                 if (WinnerChecker.checkLastRows(gameManager.matrixBoard) ||
                     WinnerChecker.enemyGone(gameManager.matrixBoard)
                 ) {
-                    prompter.win(activePlayer.playingColor.fullName)
+                    Prompter.win(activePlayer.playingColor.fullName)
                     break
                 }
                 activePlayer = if (activePlayer == playerOne) {
@@ -30,22 +29,22 @@ fun main() {
                     playerOne
                 }
             } else {
-                prompter.invalidMove()
+                Prompter.invalidMove()
             }
             gameManager.currentPlayer = activePlayer
         }
         if (WinnerChecker.checkIfStalemate(
                 gameManager.matrixBoard,
-                gameManager.figurePlaying!!
+                gameManager.figurePlaying
             )
         ) {
-            prompter.stalemate()
+            Prompter.stalemate()
             break
         }
-        prompter.playersMove(activePlayer)
-        command = prompter.askForInput()
+        Prompter.playersMove(activePlayer)
+        command = Prompter.askForInput()
     }
 
-    prompter.exitProgram()
+    Prompter.exitProgram()
 
 }

@@ -2,10 +2,10 @@ package chess
 
 class Board {
 
-    val emptySpace = "   "
-    val horLinePattern = "  " + "+---".repeat(8) + "+"
-    val fieldPattern = "|"
-    var bottomLine = getBottomLinePattern()
+    private val emptySpace = "   "
+    private val horLinePattern = "  " + "+---".repeat(8) + "+"
+    private val fieldPattern = "|"
+    private var bottomLine = getBottomLinePattern()
     val matrixBoard = createMatrixBoard()
 
     fun printBoard() {
@@ -27,7 +27,7 @@ class Board {
         println(bottomLine)
     }
 
-    fun getRow(line: Int): String {
+    private fun getRow(line: Int): String {
         var row = ""
         for (element in matrixBoard[line]) {
             row = row.plus("$fieldPattern ${element.color} ")
@@ -36,7 +36,7 @@ class Board {
         return row
     }
 
-    fun createMatrixBoard(): MutableList<MutableList<Figure>> {
+    private fun createMatrixBoard(): MutableList<MutableList<Figure>> {
         return mutableListOf(
             MutableList(8) { EmptyCell() },
             MutableList(8) { Pawn("B") },

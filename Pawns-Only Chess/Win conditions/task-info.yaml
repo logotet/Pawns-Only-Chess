@@ -1109,10 +1109,13 @@ files:
 - name: src/chess/utils/DummyBoards.kt
   visible: true
   learner_created: true
+- name: src/chess/MoveValidator.kt
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/13178#comment
 status: Solved
 feedback:
   message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">JetBrains
     Academy</a> to continue learning.
-  time: Fri, 11 Feb 2022 20:15:55 UTC
+  time: Wed, 16 Feb 2022 21:50:24 UTC
 record: 4

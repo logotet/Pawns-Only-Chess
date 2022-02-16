@@ -2,7 +2,7 @@ package chess
 
 class CommandReader {
     companion object {
-        val movePattern = "[a-h][1-8][a-h][1-8]".toRegex()
+        private val movePattern = "[a-h][1-8][a-h][1-8]".toRegex()
         fun checkMoveFormat(move: String): Boolean = move.matches(movePattern)
 
         fun getCoordsFromCommand(command: String): Coordinates {
@@ -19,16 +19,6 @@ class CommandReader {
                     Row.getPrintableRow(coordinates.colFrom) +
                     Column.getPrintableColumn(coordinates.colTo) +
                     Row.getPrintableRow(coordinates.colTo)
-        }
-
-        fun checkCommand(pawn: Pawn?, coordinates: Coordinates): String {
-            if (pawn!!.move(coordinates)) {
-                return "move"
-            }
-            if (pawn.capture(coordinates)) {
-                return "capture"
-            }
-            return ""
         }
     }
 

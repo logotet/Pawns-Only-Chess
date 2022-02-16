@@ -2,6 +2,7 @@ package chess
 
 class WinnerChecker {
     companion object {
+        private val moveValidator = MoveValidator()
         /*
         Checks if there are any enemies left on the board.
          */
@@ -46,7 +47,10 @@ class WinnerChecker {
         False returns there is at least one possibility for a move.
         True means stalemate.
          */
-        fun checkIfStalemate(board: MutableList<MutableList<Figure>>, pawn: Pawn): Boolean {
+        fun checkIfStalemate(board: MutableList<MutableList<Figure>>, pawn: Pawn?): Boolean {
+            if(pawn == null){
+                return false
+            }
             for (row in board.indices) {
                 for (col in board.indices) {
                     val piece = board[row][col]
@@ -54,14 +58,14 @@ class WinnerChecker {
                         val allPossibleMoves = getAllPossibleMoves(row, col)
                         for (coords in allPossibleMoves) {
 
-                            if ((piece as Pawn).move(coords) &&
+                            if (moveValidator.isValidPawnMove(coords, (piece as Pawn)) &&
                                 coords.colTo < 8 &&
                                 coords.rowTo < 8 &&
                                 board[coords.rowTo][coords.colTo] !is Pawn
                             ) {
                                 return false
                             }
-                            if ((piece as Pawn).capture(coords)&&
+                            if (moveValidator.isValidPawnCapture(coords,piece)&&
                                 coords.colTo < 8 &&
                                     coords.rowTo < 8
                             ) {
@@ -88,14 +92,3 @@ class WinnerChecker {
 
     }
 }
-
-//      val allPossibleMoves = mutableListOf<Coordinates>(
-//                Coordinates(col, row, col+1, row),
-//                Coordinates(col, row, col, row +1),
-//                Coordinates(col, row, col+1, row +1),
-//                Coordinates(col, row, col+1, row-1),
-//                Coordinates(col, row, col, row-1),
-//                Coordinates(col, row, col-1, row-1),
-//                Coordinates(col, row, col, row+2),
-//                Coordinates(col, row, col, row-2),
-//            )

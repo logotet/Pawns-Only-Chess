@@ -7,26 +7,24 @@ class GameManager {
     var board: Board = Board()
     var figurePlaying: Pawn? = null
     var currentPlayer: Player? = null
-    val prompter = Prompter()
     val matrixBoard = board.matrixBoard
+    private val moveValidator = MoveValidator()
 
-    //TODO Refactor the move execution as now is too complex and the logice is scattered
     fun executeMove(fromTo: String): Boolean {
         figurePlaying = null
         val coords = CommandReader.getCoordsFromCommand(fromTo)
         pickCurrentFigure(coords.rowFrom, coords.colFrom)
-        val valid = checkIfMoveIsValid(coords)
-        if (!valid) {
+        val validFigure = moveValidator.isPlayableFigure(coords, figurePlaying, currentPlayer!!)
+        if (!validFigure) {
             return false
         }
-        val command = CommandReader.checkCommand(figurePlaying, coords)
-        return when (command) {
+        return when (moveValidator.checkCommand(figurePlaying, coords)) {
             "move" -> {
                 if (!isCellWithEnemy(coords.rowTo, coords.colTo)) {
                     executePawnMove(coords)
                     true
                 } else {
-                    prompter.invalidMove()
+                    Prompter.invalidMove()
                     false
                 }
             }
@@ -34,19 +32,16 @@ class GameManager {
                 if (isCellWithEnemy(coords.rowTo, coords.colTo)) {
                     executeCapture(coords)
                     true
-                } else if (matrixBoard[coords.rowFrom][coords.colTo] is Pawn && (matrixBoard[coords.rowFrom][coords.colTo] as Pawn).enPassantAvlb &&
-                    isCellEmpty(coords.rowTo, coords.colTo) && coords.rowFrom == Row.getMatrixRow("5") ||
-                    coords.rowFrom == Row.getMatrixRow("4")
-                ) {
+                } else if (isValidEnPassant(coords)){
                     executeEnPassant(coords)
                     true
                 } else {
-                    prompter.invalidMove()
+                    Prompter.invalidMove()
                     false
                 }
             }
             else -> {
-                prompter.invalidMove()
+                Prompter.invalidMove()
                 false
             }
         }
@@ -80,37 +75,7 @@ class GameManager {
         board.printBoard()
     }
 
-    private fun checkIfMoveIsValid(coords: Coordinates): Boolean {
-        return if (figurePlaying == null) {
-            false
-        } else if (figurePlaying!!.color != currentPlayer!!.playingColor.letter) {
-            prompter.noAvlbFigure(
-                currentPlayer!!.playingColor.fullName, Column.getPrintableColumn(coords.colFrom) +
-                        Row.getPrintableRow(coords.rowFrom)
-            )
-            Column.getPrintableColumn(coords.colFrom)
-            false
-        } else {
-            true
-        }
-    }
-
     private fun isCellEmpty(row: Int, col: Int) = matrixBoard[row][col] == EmptyCell()
-
-    private fun isAllowedFigure(coords: Coordinates): Boolean {
-        return if (isCellEmpty(coords.rowFrom, coords.colFrom) ||
-            currentPlayer!!.playingColor.letter.trim() != figurePlaying!!.color.trim()
-        ) {
-            println(
-                "No ${currentPlayer!!.playingColor.fullName} pawn at " +
-                        "${Column.getPrintableColumn(coords.colFrom)}${Row.getPrintableRow(coords.rowFrom)}"
-            )
-            Column.getPrintableColumn(coords.colFrom)
-            false
-        } else {
-            true
-        }
-    }
 
     private fun isCellWithEnemy(row: Int, col: Int) =
         matrixBoard[row][col].color != figurePlaying?.color && !isCellEmpty(row, col)
@@ -118,24 +83,21 @@ class GameManager {
     private fun pickCurrentFigure(row: Int, col: Int) {
         try {
             figurePlaying = matrixBoard[row][col] as Pawn
-        } catch (e: ClassCastException) {
-            prompter.noAvlbFigure(
-                currentPlayer!!.playingColor.fullName, Column.getPrintableColumn(col) +
-                        Row.getPrintableRow(row)
-            )
-            Column.getPrintableColumn(col)
-        }
-
+        } catch (_: ClassCastException) { }
     }
 
-    fun getFigure(row: Int, col: Int): Figure = matrixBoard[row][col]
+    fun isValidEnPassant(coords: Coordinates): Boolean{
+        return matrixBoard[coords.rowFrom][coords.colTo] is Pawn && (matrixBoard[coords.rowFrom][coords.colTo] as Pawn).enPassantAvlb &&
+                isCellEmpty(coords.rowTo, coords.colTo) && coords.rowFrom == Row.getMatrixRow("5") ||
+                coords.rowFrom == Row.getMatrixRow("4")
+    }
 
     private fun disableEnPassantOption() {
-        disableEnpassantForRow("5")
-        disableEnpassantForRow("4")
+        disableEnPassantForRow("5")
+        disableEnPassantForRow("4")
     }
 
-    private fun disableEnpassantForRow(row: String) {
+    private fun disableEnPassantForRow(row: String) {
         for (piece in matrixBoard[Row.getMatrixRow(row)]) {
             if (piece is Pawn) {
                 piece.enPassantAvlb = false
