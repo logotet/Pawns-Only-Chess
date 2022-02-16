@@ -9,52 +9,48 @@ class GameManager {
     lateinit var playingColor: Color
     val matrixBoard = board.matrixBoard
     private val moveValidator = MoveValidator()
+    lateinit var coords: Coordinates
 
-    fun executeMove(fromTo: String): Boolean {
+    fun executeMove(): Boolean {
         figurePlaying = null
-        val coords = CommandReader.getCoordsFromCommand(fromTo)
         pickCurrentFigure(coords.rowFrom, coords.colFrom)
         val validFigure = moveValidator.isPlayableFigure(coords, figurePlaying, playingColor)
         if (!validFigure) {
             return false
         }
-        return when (moveValidator.checkCommand(figurePlaying, coords)) {
+        when (moveValidator.checkCommand(figurePlaying, coords)) {
             "move" -> {
                 if (!isCellWithEnemy(coords.rowTo, coords.colTo)) {
-                    executePawnMove(coords)
-                    true
-                } else {
-                    Prompter.invalidMove()
-                    false
+                    executePawnMove()
+                    return true
                 }
             }
             "capture" -> {
                 if (isCellWithEnemy(coords.rowTo, coords.colTo)) {
-                    executeCapture(coords)
-                    true
-                } else if (isValidEnPassant(coords)) {
-                    executeEnPassant(coords)
-                    true
-                } else {
-                    Prompter.invalidMove()
-                    false
+                    executeCapture()
+                    return true
+                } else if (isValidEnPassant()) {
+                    executeEnPassant()
+                    return true
                 }
             }
             else -> {
                 Prompter.invalidMove()
-                false
+                return false
             }
         }
+        Prompter.invalidMove()
+        return false
     }
 
-    private fun executeEnPassant(coords: Coordinates) {
+    private fun executeEnPassant() {
         matrixBoard[coords.rowTo][coords.colTo] = figurePlaying!!
         matrixBoard[coords.rowFrom][coords.colFrom] = EmptyCell()
         matrixBoard[coords.rowFrom][coords.colTo] = EmptyCell()
         board.printBoard()
     }
 
-    private fun executeCapture(coords: Coordinates) {
+    private fun executeCapture() {
         matrixBoard[coords.rowTo][coords.colTo] = figurePlaying!!
         matrixBoard[coords.rowFrom][coords.colFrom] = EmptyCell()
         figurePlaying!!.secondMove = figurePlaying!!.firstMove
@@ -63,7 +59,7 @@ class GameManager {
         board.printBoard()
     }
 
-    private fun executePawnMove(coords: Coordinates) {
+    private fun executePawnMove() {
         matrixBoard[coords.rowTo][coords.colTo] = figurePlaying!!
         matrixBoard[coords.rowFrom][coords.colFrom] = EmptyCell()
         figurePlaying!!.secondMove = figurePlaying!!.firstMove
@@ -87,7 +83,7 @@ class GameManager {
         }
     }
 
-    private fun isValidEnPassant(coords: Coordinates): Boolean {
+    private fun isValidEnPassant(): Boolean {
         return matrixBoard[coords.rowFrom][coords.colTo] is Pawn && (matrixBoard[coords.rowFrom][coords.colTo] as Pawn).enPassantAvlb && isCellEmpty(
             coords.rowTo,
             coords.colTo

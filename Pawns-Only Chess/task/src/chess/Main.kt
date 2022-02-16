@@ -18,8 +18,10 @@ fun main() {
             Prompter.playersMove(activePlayer)
             command = Prompter.askForInput()
             continue
+        }else{
+            gameManager.coords  = CommandReader.getCoordsFromCommand(command)
         }
-        if (gameManager.executeMove(command)) {
+        if (gameManager.executeMove()) {
             if (WinnerChecker.checkLastRows(gameManager.matrixBoard) ||
                 WinnerChecker.enemyGone(gameManager.matrixBoard)
             ) {
